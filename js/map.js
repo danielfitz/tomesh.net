@@ -279,7 +279,8 @@ function addMarker(map, nodeResult, name, location) {
       infowindow.close();
     });
     //Returns marker to identify it was created not modified
-    markerByIPV6[nodeResult['IPV6Address']]=marker;    return marker;
+    markerByIPV6[nodeResult['IPV6Address']]=marker;
+    return marker;
 
     //If marker already exists in direction and position, just add more information to the existing one.
   } else {
@@ -303,7 +304,8 @@ function addMarker(map, nodeResult, name, location) {
     }
     //Update marker
     marker.html = marker.html + Description;
-    markerByIPV6[nodeResult['IPV6Address']]=marker;    return undefined;
+    markerByIPV6[nodeResult['IPV6Address']]=marker;
+    return undefined;
   }
 }
 
