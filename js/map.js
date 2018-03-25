@@ -21,6 +21,244 @@ function initialize() {
     var filterProposed = document.getElementById('chkProposed').checked;
     var zoomGroup = document.getElementById('chkGroup').checked;
 
+//mapStyling from https://mapstyle.withgoogle.com/
+var mapStyle = [
+  {
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "weight": "2.00"
+      }
+    ]
+  },
+  {
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#9c9c9c"
+      }
+    ]
+  },
+  {
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "color": "#0e093f"
+      },
+      {
+        "saturation": "0"
+      },
+      {
+        "lightness": "0"
+      },
+      {
+        "visibility": "on"
+      },
+      {
+        "weight": "0.4"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.neighborhood",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape",
+    "stylers": [
+      {
+        "color": "#f2f2f2"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#fdfffc"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape.man_made",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#fdfffc"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "stylers": [
+      {
+        "saturation": -100
+      },
+      {
+        "lightness": 45
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#dde9e3"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#7b7b7b"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#ffffff"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "stylers": [
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "saturation": "0"
+      },
+      {
+        "lightness": "0"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "weight": "0.51"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "stylers": [
+      {
+        "color": "#46bcec"
+      },
+      {
+        "visibility": "on"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#c4dfed"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#070707"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#ffffff"
+      }
+    ]
+  }
+];
+
   //Prepare default view and create map
   var mapOptions = {
     zoom: 12,
@@ -30,7 +268,8 @@ function initialize() {
     mapTypeControl: true,
     mapTypeControlOptions: {
       position: google.maps.ControlPosition.RIGHT_BOTTOM
-    }
+    },
+    styles: mapStyle
   };
 
   infowindow = new google.maps.InfoWindow({
@@ -38,6 +277,10 @@ function initialize() {
   });
 
   map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+
+  google.maps.event.addListener(map, 'zoom_changed', function() {
+    ZoomMarkers();
+  });
 
   //Reset markers array
   markers = undefined;
@@ -97,7 +340,7 @@ function LoadLinks() {
     m1=markerByIPV6[m1];
     m2=markerByIPV6[m2];
     if (m1 && m2) {
-        var color="#0000FF";
+        var color="#00ff00";
 
         //Manually defiened "datacenter" peers
         if (
@@ -108,7 +351,7 @@ function LoadLinks() {
             linkData[key]['to']=='fcaa:5785:a537:90db:6513:bba9:87a0:12a7' || 
             linkData[key]['from']=='fcaa:5785:a537:90db:6513:bba9:87a0:12a7') {
 
-            color="#FF0000";
+            color="#FFA323";
         }
 
         var line = new google.maps.Polyline({
@@ -171,7 +414,7 @@ function addMarker(map, nodeResult, name, location) {
   Description += '<h1>' + name + '</h1>';
   Description += '<p>Status: ' + nodeStatus + '</p>';
   if (nodeResult['cardinalDirection']) Description += '<p>Direction: ' + nodeResult['cardinalDirection'] + '</p>';
-  if (nodeResult['cardinalDirectionAntenna']) Description += '<p>Antenna Direction: ' + nodeResult['cardinalDirectionAntenna'] + '</p>';	
+  if (nodeResult['cardinalDirectionAntenna']) Description += '<p>Antenna Direction: ' + nodeResult['cardinalDirectionAntenna'] + '</p>';
   if (nodeResult['floor']) Description += '<p>Floor: ' + nodeResult['floor'] + '</p>';
   if (nodeResult['IPV6Address']) Description += '<p>IPV6: ' + nodeResult['IPV6Address'] + '</p>';
   Description += '<p>Added: ' + formattedDate() + '</p>';
@@ -185,6 +428,7 @@ function addMarker(map, nodeResult, name, location) {
                     Description += '<p>State: ONLINE</p>';
                     Description += '<p>RTT: ' + pingData[nodeResult['IPV6Address']]['pingAvg'] + '</p>';
                     Description += '<p>Check: ' + pingData[nodeResult['IPV6Address']]['lastPing'] + '</p>';
+                    Description += '<p><a href="#" onclick="Grafana(\'' + nodeResult['IPV6Address'] +  '\',this); return false">Stats</a></p>';
                 } else {
                     Description += '<p>State: DOWN</p>';
                     nodeColor = 'red';
@@ -239,6 +483,7 @@ function addMarker(map, nodeResult, name, location) {
 
     var imageAnchor = new google.maps.Point(x, y);
 
+
     //Create a new marker
     marker = new google.maps.Marker({
       position: location,
@@ -246,12 +491,13 @@ function addMarker(map, nodeResult, name, location) {
       title: name,
       icon: {
         url: IMG,
-        anchor: imageAnchor
+        anchor: imageAnchor,
+	anchorOrig: imageAnchor,
+//        scaledSize: new google.maps.Size(25, 25)
       },
       direction: ArrowDirection,
       html: Description
     });
-
     //Add listener to the marker for click
     google.maps.event.addListener(marker, 'click', function () {
 
@@ -447,4 +693,49 @@ function optionExpand() {
 }
 
 
+var test1=32-(12*4);
+function ZoomMarkers() {
+
+//	s=map.getZoom()-32;
+//	s=32-s;
+//	s=((map.getZoom())+(32-12));
+	s=((map.getZoom()*4)+test1);
+
+//	document.title=s + " " + map.getZoom();
+	for (var i = 0; i < markers.length; i++) {
+		s2=s;
+		if (s2>32) s2=32;
+		var a=markers[i].getIcon();
+		a.scaledSize= new google.maps.Size(s2,s2);
+
+
+	        var imageAnchor=a.anchorOrig;
+
+		if (s>32) {
+			a.anchor=a.anchorOrig; //imageAnchorNEW;
+			document.title=s + " " + a.anchor.x;
+
+ 		} else {
+			var delta=(32-s)/2;
+
+			var imageAnchorX=a.anchorOrig.x-delta;
+			var imageAnchorY=a.anchorOrig.y-delta;
+		    	var imageAnchorNEW = new google.maps.Point(imageAnchorX, imageAnchorY);
+			a.anchor = imageAnchorNEW; //imageAnchorNEW;
+			document.title=s + " " + a.anchor.x;
+
+
+		}
+
+
+		markers[i].setIcon(a);
+	  }
+	  return undefined;
+}
 google.maps.event.addDomListener(window, 'load', initialize);
+
+function Grafana(ip,where) {
+        v2=encodeURI("[" + ip  + "]:9100");
+        link='<iframe scrolling="no" src="http://node2.e-mesh.net:3000/dashboard-solo/db/mesh-node-metrics-fixed?panelId=12&fullscreen&var-node=' + v2 + '&theme=light" height="200" frameborder="0"></iframe>';
+	where.parentElement.innerHTML=link;
+}

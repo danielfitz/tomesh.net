@@ -34,9 +34,11 @@ include: [.well-known]
 # Keep files (Dat files)
 keep_files: [.dat]
 
+# Jekyll gems
+gems: [jekyll-paginate] 
+gems: [jekyll-gist]
+
 # Events pagination
 paginate: 8
 paginate_path: "events/page-:num"
 
-# Jekyll gems
-plugins: [jekyll-paginate]
