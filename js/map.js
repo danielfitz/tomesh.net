@@ -5,19 +5,31 @@ var currentNodeListURL;
 var circle = null;
 var pingData;
 var linkData;
+var nodeData;
 var markerByIPV6 = new Object();
 
 /*************************
 |Initalize the google map
 *************************/
 function initialize() {
-  //Pull Ping Data
-  $.getJSON("https://node2.e-mesh.net/ping.json.php", function (data) {
-    pingData = data;
-  });
 
   //Current Node URL with random bits to make sure it doesnt get cached
   currentNodeListURL = document.getElementById('nodeURL').value + '?ramd=' + new Date();
+
+
+  //Pull Ping Data
+  var filePingData = $.getJSON("https://node2.e-mesh.net/ping.json.php", function (data) {
+    pingData = data;
+  });
+  //Pull Link Data
+  var fileLinkData = $.getJSON("https://node2.e-mesh.net/links.json.php", function (data) {
+    linkData = data;
+  });
+  var fileNodeData = $.getJSON(currentNodeListURL, function (data) {
+    nodeData=data;
+  });
+
+  allFiles = $.when(filePingData,fileLinkData,fileNodeData);
 
   //Set options based on check box positions
   var filterActive = document.getElementById('chkActive').checked;
@@ -290,11 +302,11 @@ function initialize() {
   markers = undefined;
   markers = [];
 
-  //Pull and process node url
-  $.getJSON(currentNodeListURL, function (data) {
+
+  allFiles.done(function () {
 
     var nodeVisible;
-
+    var data=nodeData;
     //loop through each node
     for (var key in data) {
       var results = data[key];
@@ -331,10 +343,7 @@ function initialize() {
       var mc = new MarkerClusterer(map, markers, mcOptions);
     }
     //Load Links
-    $.getJSON("https://node2.e-mesh.net/links.json.php", function (data) {
-      linkData = data;
-      LoadLinks();
-    });
+    LoadLinks();
   });
 }
 function LoadLinks() {
