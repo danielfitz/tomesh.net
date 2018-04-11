@@ -742,18 +742,18 @@ function ZoomMarkers() {
     var imageAnchor = currentIcon.anchorOrig;
 
     if (newSize > 32) {
-      currentIcon.anchor = a.anchorOrig; //imageAnchorNEW;
+      currentIcon.anchor = currentIcon.anchorOrig; //imageAnchorNEW;
     } else {
 
       var delta = (32 - newSize) / 2;
 
-      var imageAnchorX = a.anchorOrig.x - delta;
-      var imageAnchorY = a.anchorOrig.y - delta;
+      var imageAnchorX = currentIcon.anchorOrig.x - delta;
+      var imageAnchorY = currentIcon.anchorOrig.y - delta;
       var imageAnchorNEW = new google.maps.Point(imageAnchorX, imageAnchorY);
       currentIcon.anchor = imageAnchorNEW;
     }
 
-    markers[i].setIcon(a);
+    markers[i].setIcon(currentIcon);
   }
   return undefined;
 }
