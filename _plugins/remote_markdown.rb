@@ -21,7 +21,7 @@ module Jekyll
       res = Net::HTTP.get_response(uri)
       fail 'resource unavailable' unless res.is_a?(Net::HTTPSuccess)
 
-      @content = res.body.force_encoding("UTF-8")
+      @content = res.body.force_encoding("UTF-8").sub( "./", text.sub("raw.githubusercontent.com/","github.com/").sub("/master/","/blob/master/").match(/(.*\/)+(.*$)/)[1])
     end
 
     def render(_context)
